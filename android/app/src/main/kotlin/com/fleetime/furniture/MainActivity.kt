@@ -1,4 +1,4 @@
-package com.example.gate_guardian
+package com.fleetime.furniture
 
 import io.flutter.embedding.android.FlutterActivity
 
