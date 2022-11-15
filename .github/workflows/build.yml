@@ -20,7 +20,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v1
         with:
-          channel: 'stable'
+          channel: "stable"
 
       - name: Decode android/neumodore_key.jks
         run: echo "${{ secrets.KEYSTORE_JKS_PROD }}" | base64 --decode > android/app/keystore.jks
@@ -39,7 +39,6 @@ jobs:
         run: |
           sed -i 's/99.99.99+99/'$GIT_TAG_NAME'/g' pubspec.yaml|
           echo "Tag used version:"$GIT_TAG_NAME
-
 
       - name: Pub Get Packages
         run: flutter pub get
@@ -61,16 +60,14 @@ jobs:
           name: APPBUNDLE
           path: build/app/outputs/bundle/release/app-release.aab
 
-   release_internal:
-    name: Release Artifacts to internal track
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
+      - name: Release Artifacts to internal track
+        uses: actions/checkout@v1
+
       - name: Get APPBUNDLE from Artifacts
         uses: actions/download-artifact@v2
         with:
           name: APPBUNDLE
+
       - name: Release APPBUNDLE to internal track
         uses: r0adkll/upload-google-play@v1
         with:
