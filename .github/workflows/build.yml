@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: CD Internal-Lane
+name: CD
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -9,7 +9,7 @@ on:
       - "internal-v*.*.*" # on every version tag will build a new android artifact example: v3.1.2+6
 jobs:
   build:
-    name: Build Artifacts and Release
+    name: Build APK
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -17,17 +17,19 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: "12.x"
-     - name: Setup Flutter
+
+      - name: Setup Flutter
         uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
 
       - name: Decode android/neumodore_key.jks
-        run: echo "${{ secrets.KEYSTORE_JKS_PROD }}" | base64 --decode > android/keystore.jks
+        run: echo "${{ secrets.KEYSTORE_JKS_PROD }}" | base64 --decode > android/app/keystore.jks
 
       - name: Decode android/key.properties
         run: echo "${{ secrets.KEY_PROPERTIES_PROD }}" | base64 --decode > android/key.properties
 
+      - name: Generate tag
       - uses: olegtarasov/get-tag@v2 # that generate $GIT_TAG_NAME env
         id: tagName
         with:
@@ -38,6 +40,7 @@ jobs:
         run: |
           sed -i 's/99.99.99+99/'$GIT_TAG_NAME'/g' pubspec.yaml|
           echo "Tag used version:"$GIT_TAG_NAME
+
 
       - name: Pub Get Packages
         run: flutter pub get
@@ -58,8 +61,8 @@ jobs:
         with:
           name: APPBUNDLE
           path: build/app/outputs/bundle/release/app-release.aab
-          
-  release_internal:
+
+   release_internal:
     name: Release Artifacts to internal track
     needs: [build]
     runs-on: ubuntu-latest
