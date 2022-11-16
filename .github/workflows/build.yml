@@ -74,3 +74,4 @@ jobs:
           packageName: com.fleetime.furniture
           releaseFiles: app-release.aab
           track: internal
+          status: draft
